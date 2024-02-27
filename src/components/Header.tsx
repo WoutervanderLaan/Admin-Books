@@ -8,7 +8,7 @@ import LoginIcon from '../icons/Login'
 export const Header = () => {
   return (
     <header>
-      <div className="flex flex-row w-full justify-between items-center px-5 py-4 shadow-md">
+      <div className="flex flex-row w-full justify-between items-center px-5 py-4 border-b-2">
         <div className="cursor-pointer flex flex-row items-center gap-8">
           <h1 className="text-xl">BOOKS</h1>
           {/* <XLSXtoJSONConverter /> */}

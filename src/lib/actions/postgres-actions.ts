@@ -36,9 +36,7 @@ export const getTransactionsByCategory = async (
   })
 }
 
-export async function getTransactionsByAccount(
-  account: '5716170850' | '102914974' | '628664974'
-) {
+export async function getTransactionsByAccount(account: string) {
   return prisma.transactions.findMany({
     where: {
       account_number: Number(account)
@@ -49,8 +47,11 @@ export async function getTransactionsByAccount(
   })
 }
 
-export async function getTransactionCategories() {
+export async function getTransactionCategories(account?: string) {
   const categories = await prisma.transactions.findMany({
+    where: {
+      account_number: Number(account)
+    },
     distinct: ['category']
   })
 

@@ -29,9 +29,7 @@ export default function RootLayout({
       >
         <Header />
 
-        <main className="relative flex flex-col items-center flex-grow">
-          {children}
-        </main>
+        <main className="basis-1 grow">{children}</main>
       </body>
     </html>
   )
