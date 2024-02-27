@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Filter from "./Filter";
-import Overlay from "./Overlay";
-import Button from "./Button";
+import { useState } from 'react'
+import Filter from './Filter'
+import Overlay from './Overlay'
+import Button from './Button'
 
 const CategoryFilters = () => {
-  const [areFiltersOpen, setAreFiltersOpen] = useState(false);
+  const [areFiltersOpen, setAreFiltersOpen] = useState(false)
 
   return (
     <>
@@ -22,7 +22,7 @@ const CategoryFilters = () => {
             {Array.from({ length: 10 }).map((category, i) => (
               <Filter
                 key={i}
-                category={"test"}
+                category={'test'}
                 checkHandler={(e) => console.log(e)}
               />
             ))}
@@ -30,7 +30,7 @@ const CategoryFilters = () => {
         </Overlay>
       )}
     </>
-  );
-};
+  )
+}
 
-export default CategoryFilters;
+export default CategoryFilters

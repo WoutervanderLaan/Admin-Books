@@ -1,10 +1,10 @@
-import { ReactNode } from "react";
-import Button from "./Button";
+import { ReactNode } from 'react'
+import Button from './Button'
 
 type OverlayProps = {
-  children: ReactNode;
-  onClose?: () => void;
-};
+  children: ReactNode
+  onClose?: () => void
+}
 
 const Overlay = ({ children, onClose }: OverlayProps) => {
   return (
@@ -21,7 +21,7 @@ const Overlay = ({ children, onClose }: OverlayProps) => {
         </Button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Overlay;
+export default Overlay

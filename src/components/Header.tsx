@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import Button from "./Button";
-import LogoutIcon from "../icons/Logout";
-import LoginIcon from "../icons/Login";
+import Button from './Button'
+import LogoutIcon from '../icons/Logout'
+import LoginIcon from '../icons/Login'
 // import XLSXtoJSONConverter from "../Converter";
 
 export const Header = () => {
@@ -16,17 +16,17 @@ export const Header = () => {
         <div className="flex flex-row gap-4 items-center">
           <Button
             intent="secondary"
-            onClick={() => console.log("logout")}
+            onClick={() => console.log('logout')}
             icon={<LogoutIcon />}
           >
             Log out
           </Button>
 
-          <Button onClick={() => console.log("login")} icon={<LoginIcon />}>
+          <Button onClick={() => console.log('login')} icon={<LoginIcon />}>
             Log in
           </Button>
         </div>
       </div>
     </header>
-  );
-};
+  )
+}

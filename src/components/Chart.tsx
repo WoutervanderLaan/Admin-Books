@@ -1,62 +1,62 @@
-"use client";
+'use client'
 
-import classNames from "classnames";
-import { useMemo, useRef, useState } from "react";
-import Overlay from "./Overlay";
-import { truncateString } from "@/helpers/string-helpers";
+import classNames from 'classnames'
+import { useMemo, useRef, useState } from 'react'
+import Overlay from './Overlay'
+import { truncateString } from '@/helpers/string-helpers'
 
 type ChartProps = {
-  data: Chart[];
-};
+  data: Chart[]
+}
 
 type Chart = {
-  amount: number;
-  targetAmount: number;
-  name: string;
-};
+  amount: number
+  targetAmount: number
+  name: string
+}
 
 const Chart = ({ data }: ChartProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [openModal, setOpenModal] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [openModal, setOpenModal] = useState(false)
 
   const highestAmount = useMemo(() => {
-    let highestAmount = 0;
+    let highestAmount = 0
     data.forEach((value) => {
       if (value.amount > highestAmount) {
-        highestAmount = value.amount;
+        highestAmount = value.amount
       }
       if (value.targetAmount > highestAmount) {
-        highestAmount = value.targetAmount;
+        highestAmount = value.targetAmount
       }
-    });
-    return highestAmount;
-  }, [data]);
+    })
+    return highestAmount
+  }, [data])
 
   const calculateHeightPercentage = (amount: number) => {
-    const percentage = (amount * 100) / highestAmount;
-    return `${percentage}%`;
-  };
+    const percentage = (amount * 100) / highestAmount
+    return `${percentage}%`
+  }
 
   const divider = useMemo(() => {
     if (highestAmount < 1000) {
-      return 100;
+      return 100
     } else if (highestAmount < 2000) {
-      return 200;
+      return 200
     } else if (highestAmount < 4000) {
-      return 250;
+      return 250
     } else if (highestAmount < 5000) {
-      return 500;
+      return 500
     } else {
-      return 100;
+      return 100
     }
-  }, [highestAmount]);
+  }, [highestAmount])
 
   const determineVariant = (value: Chart) => {
     if (Number(Math.abs(value.amount)) >= Number(value.targetAmount))
-      return "maxxed";
-    if (value.amount > 0 && value.name !== "income") return "minned";
-    return "default";
-  };
+      return 'maxxed'
+    if (value.amount > 0 && value.name !== 'income') return 'minned'
+    return 'default'
+  }
 
   return (
     <>
@@ -95,7 +95,7 @@ const Chart = ({ data }: ChartProps) => {
                 {truncateString(value.name)}
               </span>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -103,18 +103,18 @@ const Chart = ({ data }: ChartProps) => {
         <span className="mx-2">
           Estimated spendings total: €
           {data
-            .filter((budget) => budget.name !== "income")
+            .filter((budget) => budget.name !== 'income')
             .reduce((acc, cur) => {
-              return acc + cur.targetAmount;
+              return acc + cur.targetAmount
             }, 0)}
         </span>
         <span className="mx-2">
           Spend amount total: €
           {Math.abs(
             data
-              .filter((budget) => budget.name !== "income")
+              .filter((budget) => budget.name !== 'income')
               .reduce((acc, cur) => {
-                return acc + cur.amount;
+                return acc + cur.amount
               }, 0)
           )}
         </span>
@@ -126,52 +126,52 @@ const Chart = ({ data }: ChartProps) => {
         </Overlay>
       )}
     </>
-  );
-};
+  )
+}
 
-export default Chart;
+export default Chart
 
-type BarStyleVariants = "background" | "default" | "maxxed" | "minned";
+type BarStyleVariants = 'background' | 'default' | 'maxxed' | 'minned'
 
 const variantStyles: Record<BarStyleVariants, string> = {
-  background: "bg-gradient-to-t from-gray-light to-gray",
-  default: "bg-gradient-to-t from-blue-light to-blue z-10 -translate-x-3",
-  maxxed: "bg-gradient-to-t from-red-light to-red z-10 -translate-x-3",
-  minned: "bg-gradient-to-t from-green-light to-green z-10 -translate-x-3",
-};
+  background: 'bg-gradient-to-t from-gray-light to-gray',
+  default: 'bg-gradient-to-t from-blue-light to-blue z-10 -translate-x-3',
+  maxxed: 'bg-gradient-to-t from-red-light to-red z-10 -translate-x-3',
+  minned: 'bg-gradient-to-t from-green-light to-green z-10 -translate-x-3'
+}
 
 const Bar = ({
-  variant = "default",
-  height,
+  variant = 'default',
+  height
 }: {
-  variant?: "background" | "default" | "maxxed" | "minned";
-  height: string;
+  variant?: 'background' | 'default' | 'maxxed' | 'minned'
+  height: string
 }) => {
   return (
     <div
-      className={classNames("relative w-10", variantStyles[variant])}
+      className={classNames('relative w-10', variantStyles[variant])}
       style={{
-        height,
+        height
       }}
     />
-  );
-};
+  )
+}
 
 const Divider = ({ yValue, yNumber }: { yValue: string; yNumber: number }) => (
   <>
     <div
       className="absolute h-[1px] bg-gray w-full"
       style={{
-        bottom: yValue,
+        bottom: yValue
       }}
     />
     <span
       className="absolute -left-12 text-xs translate-y-[50%] w-8 text-end text-gray-dark"
       style={{
-        bottom: yValue,
+        bottom: yValue
       }}
     >
       {yNumber}
     </span>
   </>
-);
+)
