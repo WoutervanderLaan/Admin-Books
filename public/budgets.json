@@ -1,0 +1,16 @@
+[
+  { "id": "ciri", "value": 50 },
+  { "id": "energy", "value": 250 },
+  { "id": "expense", "value": 120 },
+  { "id": "groceries", "value": 300 },
+  { "id": "health_insurance", "value": 131.2 },
+  { "id": "home_supplies", "value": 100 },
+  { "id": "income", "value": 3200 },
+  { "id": "internet", "value": 35.5 },
+  { "id": "other", "value": 300 },
+  { "id": "rent", "value": 1291.01 },
+  { "id": "restaurant", "value": 200 },
+  { "id": "subscription", "value": 100 },
+  { "id": "tax", "value": 100 },
+  { "id": "waternet", "value": 26 }
+]
