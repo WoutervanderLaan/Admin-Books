@@ -1,7 +1,7 @@
 'use server'
 
-import prisma from '../prisma'
 import { months } from '@/helpers/date-helpers'
+import prisma from '../prisma'
 
 export const getTransactions = async () => prisma.transactions.findMany()
 
@@ -36,7 +36,7 @@ export const getTransactionsByCategory = async (
   })
 }
 
-export async function getTransactionsByAccount(account: string) {
+export const getTransactionsByAccount = async (account: string) => {
   return prisma.transactions.findMany({
     where: {
       account_number: Number(account)
@@ -47,15 +47,93 @@ export async function getTransactionsByAccount(account: string) {
   })
 }
 
-export async function getTransactionCategories(account?: string) {
-  const categories = await prisma.transactions.findMany({
-    where: {
-      account_number: Number(account)
-    },
-    distinct: ['category']
-  })
+export const getTransactionCategories = async (account?: string) => {
+  const categories = await prisma.transactions.findMany(
+    account
+      ? {
+          where: {
+            account_number: Number(account)
+          },
+          distinct: ['category']
+        }
+      : undefined
+  )
 
-  return categories.map((row) => row.category) as string[]
+  return Array.from(new Set(categories)).map((row) => row.category) as string[]
+}
+
+export const getTransactionsBySearch = async ({
+  search,
+  dateFilters,
+  categoryFilters,
+  account
+}: {
+  search: string
+  dateFilters?: { month: keyof typeof months; year: number }
+  categoryFilters?: string[]
+  account?: string
+}) => {
+  const isNumber = !isNaN(Number(search.replace(',', '.')))
+
+  const queryFilters =
+    categoryFilters?.map((filter) => ({ category: { equals: filter } })) || []
+
+  const accountFilter = !isNaN(Number(account))
+    ? {
+        account_number: {
+          equals: Number(account)
+        }
+      }
+    : {}
+
+  const dateFilter = dateFilters
+    ? {
+        date: {
+          gte: new Date(dateFilters.year, months[dateFilters.month], 1),
+          lt: new Date(dateFilters.year, months[dateFilters.month] + 1, 1)
+        }
+      }
+    : {}
+
+  if (isNumber)
+    return prisma.transactions.findMany({
+      where: {
+        AND: [
+          {
+            mutation: {
+              equals: search.replace(',', '.')
+            }
+          },
+          accountFilter,
+          dateFilter,
+          ...queryFilters
+        ]
+      }
+    })
+
+  return prisma.transactions.findMany({
+    where: {
+      AND: [
+        {
+          OR: [
+            {
+              description: {
+                contains: search
+              }
+            },
+            {
+              category: {
+                contains: search
+              }
+            }
+          ]
+        },
+        accountFilter,
+        dateFilter,
+        ...queryFilters
+      ]
+    }
+  })
 }
 
 enum Categories {

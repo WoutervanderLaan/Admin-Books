@@ -1,8 +1,8 @@
+import classNames from 'classnames'
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
-import './globals.css'
-import classNames from 'classnames'
 import { Header } from '../components/Header'
+import './globals.css'
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -24,7 +24,7 @@ export default function RootLayout({
       <body
         className={classNames(
           roboto.className,
-          'min-h-screen flex flex-col relative'
+          'min-h-screen flex flex-col relative bg-gray-light'
         )}
       >
         <Header />

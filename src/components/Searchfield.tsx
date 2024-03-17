@@ -1,23 +1,19 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+import { Control, FieldValues, useController } from 'react-hook-form'
 
 type SearchFieldProps = {
+  control: Control<FieldValues, any, FieldValues>
+  name: string
   placeholder: string
 }
 
-const SearchField = ({ placeholder }: SearchFieldProps) => {
-  const [searchValue, setSearchValue] = useState('')
-
-  useEffect(() => {
-    console.log(searchValue)
-  }, [searchValue])
+const SearchField = ({ name, control, placeholder }: SearchFieldProps) => {
+  const { field } = useController({ control, name, defaultValue: '' })
 
   return (
     <input
       placeholder={placeholder}
-      className="p-2 w-full min-w-[400px] border-2 border-black outline-none rounded-md focus:border-blue-light transition-colors duration-200 ease-in-out"
-      onChange={(e) => setSearchValue(e.currentTarget.value)}
+      {...field}
+      className="min-w-[400px] grow rounded-md border-2 border-black p-2 outline-none transition-colors duration-200 ease-in-out focus:border-blue-light"
     />
   )
 }

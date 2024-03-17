@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { ReactNode } from 'react'
 
 const Layout = ({
@@ -11,7 +10,7 @@ const Layout = ({
   table: ReactNode
 }) => {
   return (
-    <div className="flex flex-col overflow-scroll">
+    <div className="flex flex-col overflow-auto">
       {children}
       {chart}
       {table}

@@ -1,12 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { getTransactionCategories } from '@/lib/actions/postgres-actions'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Control, FieldValues } from 'react-hook-form'
+import Button from './Button'
 import Filter from './Filter'
 import Overlay from './Overlay'
-import Button from './Button'
 
-const CategoryFilters = () => {
+const CategoryFilters = ({
+  control,
+  setFilters,
+  filters
+}: {
+  control: Control<FieldValues, any, FieldValues>
+  filters: string[]
+  setFilters: Dispatch<SetStateAction<string[]>>
+}) => {
   const [areFiltersOpen, setAreFiltersOpen] = useState(false)
+  const [categories, setCategories] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await getTransactionCategories()
+      setCategories(data)
+    }
+    fetchCategories()
+  }, [])
 
   return (
     <>
@@ -18,12 +37,14 @@ const CategoryFilters = () => {
       </Button>
       {areFiltersOpen && (
         <Overlay onClose={() => setAreFiltersOpen(false)}>
-          <div className="flex flex-col pr-10 gap-2 overflow-y-auto">
-            {Array.from({ length: 10 }).map((category, i) => (
+          <div className="flex flex-col gap-2 overflow-y-auto pr-10">
+            {categories.map((category, i) => (
               <Filter
                 key={i}
-                category={'test'}
-                checkHandler={(e) => console.log(e)}
+                control={control}
+                name={category}
+                filters={filters}
+                setFilters={setFilters}
               />
             ))}
           </div>

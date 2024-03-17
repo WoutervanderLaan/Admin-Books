@@ -1,9 +1,7 @@
 'use client'
 
 import classNames from 'classnames'
-import { useMemo, useRef, useState } from 'react'
-import Overlay from './Overlay'
-import { truncateString } from '@/helpers/string-helpers'
+import { useMemo, useRef } from 'react'
 
 type ChartProps = {
   data: Chart[]
@@ -17,7 +15,7 @@ type Chart = {
 
 const Chart = ({ data }: ChartProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [openModal, setOpenModal] = useState(false)
+  // const [openModal, setOpenModal] = useState(false)
 
   const highestAmount = useMemo(() => {
     let highestAmount = 0
@@ -61,9 +59,9 @@ const Chart = ({ data }: ChartProps) => {
   return (
     <>
       <div
-        className="relative border-b-[1px] border-gray flex flex-row justify-center h-[400px] w-fit gap-4 px-4 pt-2 mb-10"
+        className="relative flex flex-row justify-center h-[300px] w-fit gap-2 pr-6 pt-2 mb-2"
         ref={containerRef}
-        onClick={() => setOpenModal(true)}
+        // onClick={() => setOpenModal(true)}
       >
         {Array.from({ length: Math.round(highestAmount / divider) }).map(
           (_, i) => (
@@ -80,7 +78,7 @@ const Chart = ({ data }: ChartProps) => {
               key={i}
               className="relative h-full w-fit flex flex-col justify-end"
             >
-              <div className="relative w-20 h-full flex flex-row justify-between items-end translate-x-3">
+              <div className="relative w-6 h-full flex flex-row justify-between items-end">
                 <Bar
                   height={calculateHeightPercentage(value.targetAmount)}
                   variant="background"
@@ -91,14 +89,14 @@ const Chart = ({ data }: ChartProps) => {
                   variant={determineVariant(value)}
                 />
               </div>
-              <span className="absolute -bottom-6 text-xs text-center w-full">
+              {/* <span className="absolute -bottom-6 text-xs text-center w-full">
                 {truncateString(value.name)}
-              </span>
+              </span> */}
             </div>
           )
         })}
       </div>
-
+      {/* 
       <div className="flex flex-col">
         <span className="mx-2">
           Estimated spendings total: €
@@ -124,7 +122,7 @@ const Chart = ({ data }: ChartProps) => {
         <Overlay onClose={() => setOpenModal(false)}>
           <div />
         </Overlay>
-      )}
+      )} */}
     </>
   )
 }
@@ -135,9 +133,9 @@ type BarStyleVariants = 'background' | 'default' | 'maxxed' | 'minned'
 
 const variantStyles: Record<BarStyleVariants, string> = {
   background: 'bg-gradient-to-t from-gray-light to-gray',
-  default: 'bg-gradient-to-t from-blue-light to-blue z-10 -translate-x-3',
-  maxxed: 'bg-gradient-to-t from-red-light to-red z-10 -translate-x-3',
-  minned: 'bg-gradient-to-t from-green-light to-green z-10 -translate-x-3'
+  default: 'bg-gradient-to-t from-blue-light to-blue z-10',
+  maxxed: 'bg-gradient-to-t from-red-light to-red z-10',
+  minned: 'bg-gradient-to-t from-green-light to-green z-10'
 }
 
 const Bar = ({
@@ -149,7 +147,7 @@ const Bar = ({
 }) => {
   return (
     <div
-      className={classNames('relative w-10', variantStyles[variant])}
+      className={classNames('relative w-4', variantStyles[variant])}
       style={{
         height
       }}
