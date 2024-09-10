@@ -7,9 +7,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   type: string
   rules?: Object
   placeholder: string
-  control?: Control<{
-    [key: string]: string
-  }>
+  control?: Control
   isDisabled?: boolean
 }
 
@@ -38,7 +36,7 @@ const Input = ({
       <input
         {...field}
         className={classNames(
-          'border-b-2 px-4 py-2 border-blue-light my-4 active:border-blue focus:border-blue focus:outline-none transition-colors duration-200 ease-in-out w-80 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-white',
+          'my-4 w-80 border-b-2 border-blue-light px-4 py-2 transition-colors duration-200 ease-in-out focus:border-blue focus:outline-none active:border-blue disabled:cursor-not-allowed disabled:bg-white disabled:opacity-50',
           { 'border-red': error }
         )}
         type={type}

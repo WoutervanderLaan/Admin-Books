@@ -10,11 +10,13 @@ import Overlay from './Overlay'
 const CategoryFilters = ({
   control,
   setFilters,
-  filters
+  filters,
+  isDisabled = false
 }: {
   control: Control<FieldValues, any, FieldValues>
   filters: string[]
   setFilters: Dispatch<SetStateAction<string[]>>
+  isDisabled?: boolean
 }) => {
   const [areFiltersOpen, setAreFiltersOpen] = useState(false)
   const [categories, setCategories] = useState<string[]>([])
@@ -22,7 +24,8 @@ const CategoryFilters = ({
   useEffect(() => {
     const fetchCategories = async () => {
       const data = await getTransactionCategories()
-      setCategories(data)
+      const set = Array.from(new Set(data))
+      setCategories(set)
     }
     fetchCategories()
   }, [])
@@ -30,6 +33,7 @@ const CategoryFilters = ({
   return (
     <>
       <Button
+        isDisabled={isDisabled}
         className="h-fit self-center"
         onClick={() => setAreFiltersOpen(true)}
       >

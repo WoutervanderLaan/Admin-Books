@@ -65,7 +65,7 @@ export const getTransactionCategories = async (account?: string) => {
 export const getTransactionsBySearch = async ({
   search,
   dateFilters,
-  categoryFilters,
+  categoryFilters = [],
   account
 }: {
   search: string
@@ -75,8 +75,9 @@ export const getTransactionsBySearch = async ({
 }) => {
   const isNumber = !isNaN(Number(search.replace(',', '.')))
 
-  const queryFilters =
-    categoryFilters?.map((filter) => ({ category: { equals: filter } })) || []
+  const queryFilters = categoryFilters?.map((filter) => ({
+    category: { equals: filter }
+  }))
 
   const accountFilter = !isNaN(Number(account))
     ? {

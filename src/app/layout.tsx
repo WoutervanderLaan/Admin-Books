@@ -1,3 +1,4 @@
+import { AuthProvider } from '@/context/AuthContext'
 import classNames from 'classnames'
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
@@ -24,12 +25,14 @@ export default function RootLayout({
       <body
         className={classNames(
           roboto.className,
-          'min-h-screen flex flex-col relative bg-gray-light'
+          'relative flex min-h-screen flex-col bg-gray-light'
         )}
       >
-        <Header />
+        <AuthProvider>
+          <Header />
 
-        <main className="basis-1 grow">{children}</main>
+          <main className="grow basis-1">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   )
