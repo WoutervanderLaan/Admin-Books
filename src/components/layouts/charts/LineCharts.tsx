@@ -2,7 +2,7 @@
 
 import Card from '@/components/Card'
 import { convertAccountNr } from '@/helpers/accountNr'
-import { transactions } from '@prisma/client'
+import { Transaction } from '@/lib/types/Transaction'
 import {
   CartesianGrid,
   Line,
@@ -13,11 +13,11 @@ import {
   YAxis
 } from 'recharts'
 
-const LineChart = ({ data }: { data: transactions[] }) => {
+const LineChart = ({ data }: { data: Transaction[] }) => {
   const chartData = data.reduce(
     (
-      acc: { transactions: transactions[]; account_number: BigInt }[],
-      cur: transactions
+      acc: { transactions: Transaction[]; account_number: number }[],
+      cur: Transaction
     ) => {
       const existingAccount = acc.find(
         (item) => item.account_number === cur.account_number
@@ -37,7 +37,7 @@ const LineChart = ({ data }: { data: transactions[] }) => {
   return (
     <>
       {chartData.map((account, i) => (
-        <Card key={i} className="grow w-full flex flex-col gap-8">
+        <Card key={i} className="flex w-full grow flex-col gap-8">
           <span className="text-gray">
             {convertAccountNr(account.account_number.toString())}
           </span>

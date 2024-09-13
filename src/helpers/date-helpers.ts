@@ -9,7 +9,7 @@ export const parseDate = (str: string | number) => {
 
 export enum months {
   'january',
-  'febuary',
+  'february',
   'march',
   'april',
   'may',
@@ -19,5 +19,5 @@ export enum months {
   'september',
   'october',
   'november',
-  'december',
+  'december'
 }

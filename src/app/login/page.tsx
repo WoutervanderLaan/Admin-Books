@@ -27,7 +27,7 @@ const LoginPage = () => {
       if (response.status !== 200)
         return setError('password', { message: response.message })
 
-      router.push('/testPath')
+      router.push('/dashboard')
     } catch (error) {
       return setError('password', { message: 'Something went wrong' })
     }

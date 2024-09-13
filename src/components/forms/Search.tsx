@@ -2,29 +2,47 @@
 
 import { useAuth } from '@/context/AuthContext'
 import { months } from '@/helpers/date-helpers'
-import { getTransactionsBySearch } from '@/lib/actions/postgres-actions'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { FieldValues, useForm } from 'react-hook-form'
 import { useDebounce } from 'use-debounce'
-import CategoryFilters from '../CategoryFilters'
+import Filters from '../CategoryFilters'
 import SearchField from '../Searchfield'
+import Select from '../Select'
 
 const Search = () => {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [filters, setFilters] = useState<string[]>([])
-  const [month, setMonth] = useState<keyof typeof months | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const { isAuthenticated } = useAuth()
-
-  const { control, watch } = useForm()
-
-  const searchValue = watch('searchBar')
-  const [debouncedSearchValue] = useDebounce(searchValue, 500)
-
   const newSearchparams = new URLSearchParams(searchParams)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // const [filters, setFilters] = useState<string[]>([])
+
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const {
+    formState: { isSubmitting },
+    watch,
+    register,
+    handleSubmit
+  } = useForm()
+
+  const queryDefaults = useMemo(
+    () => ({
+      query: searchParams.get('query'),
+      month: searchParams.get('month'),
+      filters: searchParams.get('filters')
+    }),
+    [searchParams.toString()]
+  )
+
+  const month = watch('month', queryDefaults.month)
+  const searchValue = watch('searchBar', queryDefaults.query)
+  const filters = watch('filters', queryDefaults.filters)
+
+  const [debouncedSearchValue] = useDebounce(searchValue, 500)
 
   const handleSearch = (value: string | undefined) => {
     if (value) newSearchparams.set('query', value)
@@ -47,26 +65,30 @@ const Search = () => {
     router.replace(`${pathname}?${newSearchparams.toString()}`)
   }
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = async (fields: FieldValues) => {
     setIsLoading(true)
-    const data = await getTransactionsBySearch({
-      search: debouncedSearchValue,
-      dateFilters: !!newSearchparams.get('month')
-        ? {
-            month: newSearchparams.get('month') as keyof typeof month,
-            year: 2023
-          }
-        : undefined,
-      categoryFilters: filters
-      // account: '571617085'
-    })
-    console.log(data.length)
-    setIsLoading(false)
-  }
+    console.log(fields)
+    setTimeout(() => setIsLoading(true), 400)
 
-  useEffect(() => {
-    if (!!newSearchparams.toString()) fetchTransactions()
-  }, [newSearchparams.toString()])
+    // try {
+    //   const data = await getTransactionsBySearch({
+    //     search: debouncedSearchValue,
+    //     dateFilters: month
+    //       ? {
+    //           month: newSearchparams.get('month') as keyof typeof month,
+    //           year: 2023
+    //         }
+    //       : undefined,
+    //     categoryFilters: filters
+    //     // account: '571617085'
+    //   })
+    //   console.log(data.length)
+    // } catch (err) {
+    //   console.log(err)
+    // } finally {
+    //   setIsLoading(false)
+    // }
+  }
 
   useEffect(() => {
     handleSearch(debouncedSearchValue)
@@ -76,47 +98,43 @@ const Search = () => {
     handleMonthSelect(month)
   }, [month])
 
-  useEffect(() => {
-    handleFilters(filters)
-  }, [filters.length])
+  // useEffect(() => {
+  //   handleFilters(filters)
+  // }, [filters.length])
 
   return (
-    <div className="flex grow flex-row gap-4">
+    <form
+      className="flex grow flex-row gap-4"
+      ref={formRef}
+      onSubmit={handleSubmit(fetchTransactions)}
+    >
       <SearchField
-        isDisabled={!isAuthenticated}
-        control={control}
         name="searchBar"
+        register={register}
+        defaultValue={searchParams.get('query') || ''}
         placeholder="Search for transactions"
-      />
-      <CategoryFilters
-        isDisabled={isLoading || !isAuthenticated}
-        control={control}
-        filters={filters}
-        setFilters={setFilters}
+        isDisabled={isSubmitting || isLoading || !isAuthenticated}
       />
 
-      <select
-        disabled={isLoading || !isAuthenticated}
-        className="rounded-md border-2 p-2 disabled:opacity-50"
-        onChange={(e) => setMonth(e.target.value as keyof typeof months)}
+      <Filters
+        isDisabled={isSubmitting || isLoading || !isAuthenticated}
+        register={register}
+      />
+
+      <Select
+        name="month"
+        register={register}
+        defaultValue={searchParams.get('month') || ''}
+        placeholder="Select month"
+        isDisabled={isSubmitting || isLoading || !isAuthenticated}
       >
-        <option />
         {Object.keys(months)
           .filter((e) => !Number(e + 1))
           .map((month, i) => (
-            <option key={i} value={month}>
-              {month}
-            </option>
+            <Select.Option value={month} key={i} />
           ))}
-      </select>
-
-      <select
-        disabled={isLoading || !isAuthenticated}
-        className="rounded-md border-2 p-2 disabled:opacity-50"
-      >
-        <option>2023</option>
-      </select>
-    </div>
+      </Select>
+    </form>
   )
 }
 

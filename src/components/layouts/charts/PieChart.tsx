@@ -1,7 +1,7 @@
 'use client'
 
 import budgets from '@/../public/budgets.json'
-import { transactions } from '@prisma/client'
+import { Transaction } from '@/lib/types/Transaction'
 import {
   Cell,
   Legend,
@@ -11,7 +11,7 @@ import {
   Tooltip
 } from 'recharts'
 
-const PieChart = ({ data }: { data: transactions[] }) => {
+const PieChart = ({ data }: { data: Transaction[] }) => {
   const chartData = budgets.map((budget) => {
     const amount = data.reduce((acc, cur) => {
       if (cur.category?.includes(budget.id)) {

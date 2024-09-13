@@ -1,11 +1,11 @@
 export type Transaction = {
-  id?: string
-  accountNumber: string | number
-  date: string | number
-  mutation: number | string
-  totalAmountBefore: number | string
-  totalAmountAfter: number | string
-  description: string
-  category: string
-  note?: string
+  id: string
+  account_number: number | null
+  category: string | null
+  date: Date | null
+  description: string | null
+  mutation: number | null
+  note: string | null
+  total_amount_after: number | null
+  total_amount_before: number | null
 }

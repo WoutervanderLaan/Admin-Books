@@ -1,24 +1,19 @@
 'use client'
 
 import { getTransactionCategories } from '@/lib/actions/postgres-actions'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Control, FieldValues } from 'react-hook-form'
-import Button from './Button'
-import Filter from './Filter'
-import Overlay from './Overlay'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { FieldValues, UseFormRegister } from 'react-hook-form'
+import Select from './Select'
 
-const CategoryFilters = ({
-  control,
-  setFilters,
-  filters,
-  isDisabled = false
-}: {
-  control: Control<FieldValues, any, FieldValues>
-  filters: string[]
-  setFilters: Dispatch<SetStateAction<string[]>>
+type TFilterSelect = {
+  categories: string[]
+  register: UseFormRegister<FieldValues>
   isDisabled?: boolean
-}) => {
-  const [areFiltersOpen, setAreFiltersOpen] = useState(false)
+}
+
+const Filters = (props: Omit<TFilterSelect, 'categories'>) => {
+  'use server '
   const [categories, setCategories] = useState<string[]>([])
 
   useEffect(() => {
@@ -30,32 +25,26 @@ const CategoryFilters = ({
     fetchCategories()
   }, [])
 
+  return <FiltersSelect categories={categories} {...props} />
+}
+
+const FiltersSelect = ({ categories, register, isDisabled }: TFilterSelect) => {
+  const searchParams = useSearchParams()
+
   return (
-    <>
-      <Button
-        isDisabled={isDisabled}
-        className="h-fit self-center"
-        onClick={() => setAreFiltersOpen(true)}
-      >
-        Filters
-      </Button>
-      {areFiltersOpen && (
-        <Overlay onClose={() => setAreFiltersOpen(false)}>
-          <div className="flex flex-col gap-2 overflow-y-auto pr-10">
-            {categories.map((category, i) => (
-              <Filter
-                key={i}
-                control={control}
-                name={category}
-                filters={filters}
-                setFilters={setFilters}
-              />
-            ))}
-          </div>
-        </Overlay>
-      )}
-    </>
+    <Select
+      name="filters"
+      register={register}
+      // multiple
+      defaultValue={searchParams.get('filters') || ''}
+      placeholder="Select filters"
+      isDisabled={isDisabled}
+    >
+      {categories.map((category, i) => (
+        <Select.Option value={category} key={i} />
+      ))}
+    </Select>
   )
 }
 
-export default CategoryFilters
+export default Filters

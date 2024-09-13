@@ -1,7 +1,7 @@
 'use client'
 
 import budgets from '@/../public/budgets.json'
-import { transactions } from '@prisma/client'
+import { Transaction } from '@/lib/types/Transaction'
 import {
   Bar,
   CartesianGrid,
@@ -17,7 +17,7 @@ const BarChart = ({
   data,
   showTarget = true
 }: {
-  data: transactions[]
+  data: Transaction[]
   showTarget?: boolean
 }) => {
   const chartData = budgets.map((budget) => {
