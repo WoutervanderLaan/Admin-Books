@@ -1,24 +1,30 @@
 'use client'
 
-import Button from '@/components/Button'
-import Card from '@/components/Card'
-import Input from '@/components/TextInput'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { useAuth } from '@/context/AuthContext'
+import { TPasswordForm, passwordSchema } from '@/lib/schema/zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
-import { FieldValues, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 
 const LoginPage = () => {
   const router = useRouter()
   const { login } = useAuth()
 
-  const {
-    handleSubmit,
-    formState: { isLoading },
-    setError,
-    control
-  } = useForm()
+  const { handleSubmit, setError, control } = useForm<TPasswordForm>({
+    resolver: zodResolver(passwordSchema)
+  })
 
-  const onSubmit = async (data: FieldValues) => {
+  const onSubmit = async (data: TPasswordForm) => {
     const { password } = data
 
     try {
@@ -26,7 +32,6 @@ const LoginPage = () => {
 
       if (response.status !== 200)
         return setError('password', { message: response.message })
-
       router.push('/dashboard')
     } catch (error) {
       return setError('password', { message: 'Something went wrong' })
@@ -35,21 +40,29 @@ const LoginPage = () => {
 
   return (
     <div className="container flex h-full items-center justify-center">
-      <Card>
-        {isLoading && <div className="h-2 w-full animate-pulse bg-red" />}
-
-        {!isLoading && (
-          <form onSubmit={handleSubmit(onSubmit)}>
+      <Card className="w-[350px]">
+        <CardHeader>
+          <CardTitle>Log in to access data</CardTitle>
+          <CardDescription>
+            Get full insights into your financial records
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form id="login" onSubmit={handleSubmit(onSubmit)}>
             <Input
               name="password"
               type="password"
-              placeholder="password"
+              placeholder="Password"
               control={control}
-              required
+              rules={{ required: true }}
             />
-            <Button type="submit">Log in</Button>
           </form>
-        )}
+        </CardContent>
+        <CardFooter>
+          <Button form="login" type="submit">
+            Log in
+          </Button>
+        </CardFooter>
       </Card>
     </div>
   )

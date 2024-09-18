@@ -1,14 +1,24 @@
 'use client'
 
 import { useAuth } from '@/context/AuthContext'
-import { months } from '@/helpers/date-helpers'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { FieldValues, useForm } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useDebounce } from 'use-debounce'
-import Filters from '../CategoryFilters'
-import SearchField from '../Searchfield'
-import Select from '../Select'
+// import Select from '../Select'
+import { getTransactionsBySearch } from '@/lib/actions/postgres-actions'
+import { months, searchSchema, TMonths, TSearchForm } from '@/lib/schema/zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Input } from '../ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select'
 
 const Search = () => {
   const pathname = usePathname()
@@ -17,30 +27,27 @@ const Search = () => {
   const { isAuthenticated } = useAuth()
   const newSearchparams = new URLSearchParams(searchParams)
   const [isLoading, setIsLoading] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
 
   // const [filters, setFilters] = useState<string[]>([])
 
-  const formRef = useRef<HTMLFormElement>(null)
-
   const {
     formState: { isSubmitting },
+    setValue,
     watch,
-    register,
+    control,
     handleSubmit
-  } = useForm()
+  } = useForm<TSearchForm>({
+    resolver: zodResolver(searchSchema),
+    defaultValues: {
+      search: searchParams.get('query') || undefined,
+      month: (searchParams.get('month') as TMonths) || undefined
+    }
+  })
 
-  const queryDefaults = useMemo(
-    () => ({
-      query: searchParams.get('query'),
-      month: searchParams.get('month'),
-      filters: searchParams.get('filters')
-    }),
-    [searchParams.toString()]
-  )
-
-  const month = watch('month', queryDefaults.month)
-  const searchValue = watch('searchBar', queryDefaults.query)
-  const filters = watch('filters', queryDefaults.filters)
+  const month = watch('month')
+  const searchValue = watch('search')
+  // const filters = watch('filters', queryDefaults.filters)
 
   const [debouncedSearchValue] = useDebounce(searchValue, 500)
 
@@ -51,43 +58,41 @@ const Search = () => {
     router.replace(`${pathname}?${newSearchparams.toString()}`)
   }
 
-  const handleMonthSelect = (month: keyof typeof months | null) => {
-    if (month) newSearchparams.set('month', month)
+  const handleMonthSelect = (month?: TMonths) => {
+    if (month) newSearchparams.set('month', month.toString())
     if (!month) newSearchparams.delete('month')
 
     router.replace(`${pathname}?${newSearchparams.toString()}`)
   }
 
-  const handleFilters = (filters: Array<string>) => {
-    if (filters.length) newSearchparams.set('filters', filters.join('%'))
-    if (!filters.length) newSearchparams.delete('filters')
+  // const handleFilters = (filters: Array<string>) => {
+  //   if (filters.length) newSearchparams.set('filters', filters.join('%'))
+  //   if (!filters.length) newSearchparams.delete('filters')
 
-    router.replace(`${pathname}?${newSearchparams.toString()}`)
-  }
+  //   router.replace(`${pathname}?${newSearchparams.toString()}`)
+  // }
 
-  const fetchTransactions = async (fields: FieldValues) => {
-    setIsLoading(true)
-    console.log(fields)
-    setTimeout(() => setIsLoading(true), 400)
+  const fetchTransactions = async ({ search, month }: TSearchForm) => {
+    console.log(search, month)
 
-    // try {
-    //   const data = await getTransactionsBySearch({
-    //     search: debouncedSearchValue,
-    //     dateFilters: month
-    //       ? {
-    //           month: newSearchparams.get('month') as keyof typeof month,
-    //           year: 2023
-    //         }
-    //       : undefined,
-    //     categoryFilters: filters
-    //     // account: '571617085'
-    //   })
-    //   console.log(data.length)
-    // } catch (err) {
-    //   console.log(err)
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    try {
+      const data = await getTransactionsBySearch({
+        search: search || '',
+        dateFilters: month
+          ? {
+              month,
+              year: 2023
+            }
+          : undefined,
+        categoryFilters: []
+        // account: '571617085'
+      })
+      console.log(data.length)
+    } catch (err) {
+      console.log(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -102,37 +107,50 @@ const Search = () => {
   //   handleFilters(filters)
   // }, [filters.length])
 
+  useEffect(() => {
+    if (month || debouncedSearchValue)
+      fetchTransactions({ search: debouncedSearchValue, month })
+  }, [month, debouncedSearchValue])
+
   return (
     <form
-      className="flex grow flex-row gap-4"
+      className="flex w-full flex-row justify-between gap-4"
       ref={formRef}
       onSubmit={handleSubmit(fetchTransactions)}
     >
-      <SearchField
-        name="searchBar"
-        register={register}
-        defaultValue={searchParams.get('query') || ''}
+      <Input
+        name="search"
+        control={control}
+        defaultValue={searchParams.get('query') || undefined}
         placeholder="Search for transactions"
-        isDisabled={isSubmitting || isLoading || !isAuthenticated}
+        disabled={isSubmitting || isLoading || !isAuthenticated}
       />
 
-      <Filters
+      {/* <Filters
         isDisabled={isSubmitting || isLoading || !isAuthenticated}
         register={register}
-      />
+      /> */}
 
       <Select
         name="month"
-        register={register}
-        defaultValue={searchParams.get('month') || ''}
-        placeholder="Select month"
-        isDisabled={isSubmitting || isLoading || !isAuthenticated}
+        onValueChange={(v: TMonths) => setValue('month', v)}
+        defaultValue={searchParams.get('month') || undefined}
+        disabled={isSubmitting || isLoading || !isAuthenticated}
       >
-        {Object.keys(months)
-          .filter((e) => !Number(e + 1))
-          .map((month, i) => (
-            <Select.Option value={month} key={i} />
-          ))}
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a month" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Months</SelectLabel>
+
+            {months.map((month, i) => (
+              <SelectItem value={month} key={i}>
+                {month}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
       </Select>
     </form>
   )

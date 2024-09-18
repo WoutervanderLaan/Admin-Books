@@ -1,15 +1,14 @@
+import { passwordSchema } from '@/lib/schema/zod'
 import bcrypt from 'bcryptjs'
 import { SignJWT } from 'jose'
 import { NextResponse } from 'next/server'
-import z from 'zod'
-
-const passwordSchema = z.string().min(8)
 
 export async function POST(request: Request) {
   try {
-    const { password } = await request.json()
+    const data = await request.json()
 
-    passwordSchema.parse(password)
+    passwordSchema.parse(data)
+    const { password } = data
 
     const isPasswordValid = await bcrypt.compare(
       password,

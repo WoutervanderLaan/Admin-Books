@@ -1,22 +1,19 @@
 'use server'
 
-import { months } from '@/helpers/date-helpers'
 import { convertTransactionType } from '@/helpers/type-casting'
 import prisma from '../prisma'
+import { months, TMonths } from '../schema/zod'
 
 export const getTransactions = async () => {
   const transactions = await prisma.transactions.findMany()
   return convertTransactionType(transactions)
 }
 
-export const getTransactionsByMonth = async (
-  month: keyof typeof months,
-  year: number
-) => {
-  const index = months[month]
+export const getTransactionsByMonth = async (month: TMonths, year: number) => {
+  const index = months.indexOf(month)
 
-  const startDate = new Date(year, index, 1)
-  const endDate = new Date(year, index + 1, 1)
+  const startDate = new Date(year, Number(index), 1)
+  const endDate = new Date(year, Number(index + 1), 1)
 
   const transactions = await prisma.transactions.findMany({
     where: {
@@ -74,11 +71,10 @@ export const getTransactionsBySearch = async ({
   account
 }: {
   search: string
-  dateFilters?: { month: keyof typeof months; year: number }
+  dateFilters?: { month: TMonths; year: number }
   categoryFilters?: string[]
   account?: string
 }) => {
-  console.log('fetching...')
   const isNumber = !isNaN(Number(search.replace(',', '.')))
 
   const queryFilters = categoryFilters?.map((filter) => ({
@@ -96,8 +92,12 @@ export const getTransactionsBySearch = async ({
   const dateFilter = dateFilters
     ? {
         date: {
-          gte: new Date(dateFilters.year, months[dateFilters.month], 1),
-          lt: new Date(dateFilters.year, months[dateFilters.month] + 1, 1)
+          gte: new Date(dateFilters.year, months.indexOf(dateFilters.month), 1),
+          lt: new Date(
+            dateFilters.year,
+            months.indexOf(dateFilters.month) + 1,
+            1
+          )
         }
       }
     : {}
