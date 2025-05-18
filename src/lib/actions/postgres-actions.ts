@@ -1,8 +1,17 @@
 'use server'
 
-import { convertTransactionType } from '@/helpers/type-casting'
+import { transactions } from '@prisma/client'
 import prisma from '../prisma'
-import { months, TMonths } from '../schema/zod'
+import { months, TMonths } from '../types/Months'
+
+const convertTransactionType = (transactions: transactions[]) =>
+  transactions.map((t) => ({
+    ...t,
+    account_number: Number(t.account_number),
+    mutation: Number(t.mutation),
+    total_amount_after: Number(t.total_amount_after),
+    total_amount_before: Number(t.total_amount_before)
+  }))
 
 export const getTransactions = async () => {
   const transactions = await prisma.transactions.findMany()
@@ -66,28 +75,12 @@ export const getTransactionCategories = async (account?: string) => {
 
 export const getTransactionsBySearch = async ({
   search,
-  dateFilters,
-  categoryFilters = [],
-  account
+  dateFilters
 }: {
   search: string
   dateFilters?: { month: TMonths; year: number }
-  categoryFilters?: string[]
-  account?: string
 }) => {
   const isNumber = !isNaN(Number(search.replace(',', '.')))
-
-  const queryFilters = categoryFilters?.map((filter) => ({
-    category: { equals: filter }
-  }))
-
-  const accountFilter = !isNaN(Number(account))
-    ? {
-        account_number: {
-          equals: Number(account)
-        }
-      }
-    : {}
 
   const dateFilter = dateFilters
     ? {
@@ -111,9 +104,7 @@ export const getTransactionsBySearch = async ({
               equals: search.replace(',', '.')
             }
           },
-          accountFilter,
-          dateFilter,
-          ...queryFilters
+          dateFilter
         ]
       }
     })
@@ -135,9 +126,7 @@ export const getTransactionsBySearch = async ({
             }
           ]
         },
-        accountFilter,
-        dateFilter,
-        ...queryFilters
+        dateFilter
       ]
     }
   })

@@ -1,33 +1,5 @@
+import { months } from '@/lib/types/Months'
 import z from 'zod'
-
-export const months = [
-  'january',
-  'february',
-  'march',
-  'april',
-  'may',
-  'june',
-  'july',
-  'augustus',
-  'september',
-  'october',
-  'november',
-  'december'
-] as const
-
-export type TMonths =
-  | 'january'
-  | 'february'
-  | 'march'
-  | 'april'
-  | 'may'
-  | 'june'
-  | 'july'
-  | 'augustus'
-  | 'september'
-  | 'october'
-  | 'november'
-  | 'december'
 
 export const passwordSchema = z.object({
   password: z

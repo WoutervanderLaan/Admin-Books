@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import {
   Card,
   CardContent,
@@ -8,8 +8,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+} from '@/components/ui/Card'
+import { Input } from '@/components/ui/Input'
 import { useAuth } from '@/context/AuthContext'
 import { TPasswordForm, passwordSchema } from '@/lib/schema/zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,6 +32,7 @@ const LoginPage = () => {
 
       if (response.status !== 200)
         return setError('password', { message: response.message })
+
       router.push('/dashboard')
     } catch (error) {
       return setError('password', { message: 'Something went wrong' })

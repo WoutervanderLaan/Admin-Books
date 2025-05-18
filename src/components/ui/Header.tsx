@@ -1,12 +1,12 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/context/AuthContext'
+import LoginIcon from '@/icons/Login'
+import LogoutIcon from '@/icons/Logout'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import LoginIcon from '../icons/Login'
-import LogoutIcon from '../icons/Logout'
-import Search from './forms/Search'
+import Search from '../forms/Search'
 
 export const Header = () => {
   const router = useRouter()
@@ -18,7 +18,7 @@ export const Header = () => {
         <div className="flex cursor-pointer flex-row items-center gap-8">
           <Link
             href={'/'}
-            className="ring-offset-background rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            className="rounded-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
           >
             <h1 className="text-xl">BOOKS</h1>
           </Link>

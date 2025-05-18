@@ -1,27 +1,19 @@
-enum ENDPOINTS_POST {
-  '/api/auth/login'
-}
+type ENDPOINTS_POST = '/api/auth/login'
 
-enum ENDPOINTS_DELETE {
-  '/api/auth/logout'
-}
+type ENDPOINTS_DELETE = '/api/auth/logout'
 
-enum ENDPOINTS_GET {
-  '/api/auth/refresh'
-}
+type ENDPOINTS_GET = '/api/auth/refresh'
 
-enum ENDPOINTS_HEAD {
-  '/api/auth/check'
-}
+type ENDPOINTS_HEAD = '/api/auth/check'
 
 type TGetRequest = {
-  endpoint: keyof typeof ENDPOINTS_GET
+  endpoint: ENDPOINTS_GET
   method?: 'GET'
   body?: never
 }
 
 type TPostRequest = {
-  endpoint: keyof typeof ENDPOINTS_POST
+  endpoint: ENDPOINTS_POST
   method: 'POST'
   body: {
     [key: string]: any
@@ -29,13 +21,13 @@ type TPostRequest = {
 }
 
 type TDeleteRequest = {
-  endpoint: keyof typeof ENDPOINTS_DELETE
+  endpoint: ENDPOINTS_DELETE
   method: 'DELETE'
   body?: never
 }
 
 type THeadRequest = {
-  endpoint: keyof typeof ENDPOINTS_HEAD
+  endpoint: ENDPOINTS_HEAD
   method: 'HEAD'
   body?: never
 }
